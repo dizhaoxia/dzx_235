@@ -1,0 +1,19 @@
+{
+  "name": "collab-doc-server",
+  "version": "1.0.0",
+  "description": "Real-time collaborative document editing server",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "ws": "^8.16.0",
+    "y-protocols": "^1.0.6",
+    "yjs": "^13.6.10",
+    "lib0": "^0.2.93"
+  }
+}
