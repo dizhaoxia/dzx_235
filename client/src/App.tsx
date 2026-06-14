@@ -24,6 +24,18 @@ const generateUsername = () => {
 };
 
 const getUserInfo = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const overrideName = urlParams.get('user');
+  const overrideColor = urlParams.get('color');
+
+  if (overrideName) {
+    return {
+      id: uuidv4(),
+      name: overrideName,
+      color: overrideColor || USER_COLORS[Math.floor(Math.random() * USER_COLORS.length)]
+    };
+  }
+
   let userInfo = localStorage.getItem('collab-user-info');
   if (userInfo) {
     return JSON.parse(userInfo);
@@ -38,7 +50,10 @@ const getUserInfo = () => {
 };
 
 function App() {
-  const [currentDoc, setCurrentDoc] = useState<string | null>(null);
+  const [currentDoc, setCurrentDoc] = useState<string | null>(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('doc');
+  });
   const [currentDocTitle, setCurrentDocTitle] = useState<string>('');
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,6 +78,17 @@ function App() {
   useEffect(() => {
     fetchDocuments();
   }, [fetchDocuments]);
+
+  useEffect(() => {
+    if (currentDoc && !currentDocTitle) {
+      fetch(`/api/documents/${currentDoc}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.title) setCurrentDocTitle(data.title);
+        })
+        .catch(e => console.error('Failed to fetch doc title:', e));
+    }
+  }, [currentDoc, currentDocTitle]);
 
   const createDocument = async () => {
     const id = uuidv4();
